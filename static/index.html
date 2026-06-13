@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#0A0E17">
+<meta name="description" content="Live system monitor — CPU, memory, disk, temperature">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<title>Panel Admin</title>
+</head>
+<body>
+<div id="app">
+	<header id="topbar">
+		<div class="topbar-left">
+			<span class="status-dot" id="statusDot"></span>
+			<span id="hostname">—</span>
+		</div>
+		<div class="topbar-right">
+			<span id="uptimeDisplay"></span>
+			<span id="timeDisplay"></span>
+		</div>
+	</header>
+
+	<main id="dashboard">
+		<!-- CPU -->
+		<section class="card" data-metric="cpu">
+			<div class="card-header">
+				<span class="card-icon">⚡</span>
+				<h2 class="card-title">CPU</h2>
+				<span class="card-badge" id="cpuFreq"></span>
+			</div>
+			<div class="card-value" id="cpuValue">0%</div>
+			<div class="card-chart">
+				<canvas id="cpuChart" width="600" height="120"></canvas>
+			</div>
+			<div class="card-cores" id="cpuCores"></div>
+		</section>
+
+		<!-- Memory -->
+		<section class="card" data-metric="memory">
+			<div class="card-header">
+				<span class="card-icon">🧠</span>
+				<h2 class="card-title">Memory</h2>
+				<span class="card-badge" id="memDetail"></span>
+			</div>
+			<div class="card-value" id="memValue">0%</div>
+			<div class="card-bar">
+				<div class="bar-track"><div class="bar-fill" id="memBar"></div></div>
+			</div>
+			<div class="card-chart">
+				<canvas id="memChart" width="600" height="80"></canvas>
+			</div>
+			<div class="card-sub" id="memSub">Swap: —</div>
+		</section>
+
+		<!-- Disk -->
+		<section class="card" data-metric="disk">
+			<div class="card-header">
+				<span class="card-icon">💾</span>
+				<h2 class="card-title">Disk</h2>
+			</div>
+			<div id="diskContent">
+				<div class="disk-item">
+					<div class="disk-label">
+						<span class="disk-mount">/</span>
+						<span class="disk-size" id="diskSize">—</span>
+					</div>
+					<div class="card-bar">
+						<div class="bar-track"><div class="bar-fill" id="diskBar"></div></div>
+					</div>
+					<div class="disk-pct" id="diskPct">0%</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Temperature -->
+		<section class="card" data-metric="temp">
+			<div class="card-header">
+				<span class="card-icon">🌡️</span>
+				<h2 class="card-title">Temperature</h2>
+			</div>
+			<div class="card-value" id="tempValue">—°</div>
+			<div class="card-chart">
+				<canvas id="tempChart" width="600" height="80"></canvas>
+			</div>
+		</section>
+
+		<!-- Network -->
+		<section class="card" data-metric="network">
+			<div class="card-header">
+				<span class="card-icon">🌐</span>
+				<h2 class="card-title">Network</h2>
+			</div>
+			<div class="net-row">
+				<div class="net-stat">
+					<span class="net-label">Download</span>
+					<span class="net-value" id="netRX">—</span>
+				</div>
+				<div class="net-stat">
+					<span class="net-label">Upload</span>
+					<span class="net-value" id="netTX">—</span>
+				</div>
+			</div>
+			<div class="card-chart">
+				<canvas id="netChart" width="600" height="80"></canvas>
+			</div>
+		</section>
+
+		<!-- Load -->
+		<section class="card" data-metric="load">
+			<div class="card-header">
+				<span class="card-icon">📊</span>
+				<h2 class="card-title">Load Average</h2>
+			</div>
+			<div class="load-row">
+				<div class="load-item"><span class="load-num" id="load1">0.00</span><span class="load-label">1m</span></div>
+				<div class="load-item"><span class="load-num" id="load5">0.00</span><span class="load-label">5m</span></div>
+				<div class="load-item"><span class="load-num" id="load15">0.00</span><span class="load-label">15m</span></div>
+			</div>
+		</section>
+
+		<!-- Processes -->
+		<section class="card" id="procsCard" data-metric="procs">
+			<div class="card-header">
+				<span class="card-icon">🔧</span>
+				<h2 class="card-title">Top Processes</h2>
+				<span class="card-badge" id="procCount"></span>
+			</div>
+			<div class="procs-list" id="procsList">
+				<div class="procs-placeholder">No data yet</div>
+			</div>
+		</section>
+	</main>
+
+	<footer id="footer">
+		<span>Panel Admin · real-time system monitor</span>
+	</footer>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

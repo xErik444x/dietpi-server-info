@@ -1,0 +1,35 @@
+# Binaries
+panel_admin
+panel_admin-*
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+*.out
+
+# Dependency directories (none for stdlib-only, but be safe)
+vendor/
+
+# Logs
+logs/*.log
+logs/*.log.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Go workspace
+go.work
+go.work.sum
+
+# Crush / agent tooling
+.crush/
