@@ -19,6 +19,27 @@
 
 **Panel Admin** es un dashboard web que muestra en vivo el estado de tu sistema: CPU, memoria, disco, temperatura, red y los procesos mas exigentes. Todo desde el propio `/proc` y `/sys` — **cero agentes, cero servicios externos, cero base de datos**.
 
+Descarga el binario de la [ultima release](https://github.com/xErik444x/dietpi-server-info/releases) para tu Raspberry Pi, descomprimelo y arrancalo con PM2:
+
+```bash
+# 1. Descargar y descomprimir (Pi 4 / Pi 5)
+wget https://github.com/xErik444x/dietpi-server-info/releases/latest/download/panel_admin-linux-arm64.tar.gz
+tar -xzf panel_admin-linux-arm64.tar.gz
+chmod +x panel_admin
+
+# 2. Instalar PM2 (si no lo tienes)
+npm install -g pm2
+
+# 3. Arrancar con el ecosystem incluido en el tarball
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup   # opcional: auto-arranque al iniciar el sistema
+
+# Alternativa: arrancar ad-hoc sin ecosystem (puerto custom via flag)
+pm2 start ./panel_admin --name panel-admin -- --port 9090
+pm2 save
+```
+
 ```
 +--------------------------------------------------+
 |  • panel_admin         uptime 4d 12h    21:48:03 |
@@ -110,26 +131,6 @@ Argumentos disponibles:
 
 ### Produccion (release)
 
-Descarga el binario de la [ultima release](https://github.com/xErik444x/dietpi-server-info/releases) para tu Raspberry Pi, descomprimelo y arrancalo con PM2:
-
-```bash
-# 1. Descargar y descomprimir (Pi 4 / Pi 5)
-wget https://github.com/xErik444x/dietpi-server-info/releases/latest/download/panel_admin-linux-arm64.tar.gz
-tar -xzf panel_admin-linux-arm64.tar.gz
-chmod +x panel_admin
-
-# 2. Instalar PM2 (si no lo tienes)
-npm install -g pm2
-
-# 3. Arrancar con el ecosystem incluido en el tarball
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup   # opcional: auto-arranque al iniciar el sistema
-
-# Alternativa: arrancar ad-hoc sin ecosystem (puerto custom via flag)
-pm2 start ./panel_admin --name panel-admin -- --port 9090
-pm2 save
-```
 
 Para Pi 2 v1.2 / Pi 3 / Pi 3+ usa el archivo `panel_admin-linux-armv7.tar.gz`. Ajusta la ruta `cwd` en `ecosystem.config.js` si lo descomprimes en otro directorio (por defecto `/root/programacion/panel_admin`).
 
@@ -167,71 +168,9 @@ pm2 logs panel-admin
 | `/api/events` | SSE      | Stream JSON con metricas cada 2 segundos          |
 | `/static/*`   | assets   | Iconos, manifest, service worker                  |
 
-## Flujo de trabajo (GitFlow)
-
-Este proyecto sigue **GitFlow** simplificado:
-
-```
-master         ─────────●─────────●─────────►  (releases estables, tagged)
-                       /         /
-develop  ──●──●──●──●───────●──●               (integracion, feature/*, bugfix/*)
-            \  /        /
-feature/x     ●         (PR a develop)
-```
-
-### Como contribuir
-
-```bash
-# 1. Crear rama de feature desde develop
-git checkout develop
-git checkout -b feature/mi-cambio
-
-# 2. Commit siguiendo Conventional Commits
-git commit -m "feat(metrics): add gpu temperature sensor"
-
-# 3. Push y abrir PR hacia develop
-git push origin feature/mi-cambio
-
-# 4. Tras aprobar, merge a develop
-```
-
-### Como cortar una release
-
-```bash
-# Desde develop
-git checkout master
-git merge --no-ff develop
-git tag -a v1.2.0 -m "Release 1.2.0"
-git push origin master --tags
-```
-
-Al pushear un tag `v*`, **GitHub Actions** compila automaticamente los binarios para Raspberry Pi y publica la release.
-
-## Releases automatizadas
-
-Cada tag `vX.Y.Z` dispara el workflow `.github/workflows/release.yml` que:
-
-1. Compila el binario para **3 arquitecturas**:
-   - `linux/arm64` — Raspberry Pi 4, Pi 5, Zero 2 W
-   - `linux/arm/7` — Raspberry Pi 3, Pi 2 (hard-float)
-   - `linux/amd64` — Para dev/debug en PC
-2. Genera checksums `SHA256`.
-3. Adjunta los artefactos al GitHub Release con notas de version automaticas.
 
 ## Capturas
 
 <div align="center">
   <img src="docs/preview.png" alt="Panel Admin preview" width="900">
-</div>
-
-> La imagen vive en [`docs/preview.png`](docs/preview.png). Si queres reemplazarla, manten el mismo path y nombre para no romper el link.
-
-## Licencia
-
-MIT — ver [LICENSE](LICENSE).
-
----
-
-<div align="center">
-Hecho con cariño para la comunidad maker.
 </div>
