@@ -417,53 +417,164 @@ function updateDate() {
 	weatherDate.textContent = `${dateStr} · ${timeStr}`;
 }
 
-function weatherRec(temp, code) {
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function shuffle(arr) {
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[arr[i], arr[j]] = [arr[j], arr[i]];
+	}
+	return arr;
+}
+
+function weatherRec(temp, code, windKmph) {
 	const c = Number(code);
 	const rain = (c >= 176 && c <= 200) || (c >= 263 && c <= 389);
-	const items = [];
-	if (rain) items.push('☂️ paraguas');
-	if (temp >= 25) items.push('👕 remera');
-	else if (temp >= 18) items.push('👕 ponete buzo');
-	else if (temp >= 10) items.push('🧥 ponete campera');
-	else items.push('🧊 abrigate chango');
-	return '🛍️ ' + [...new Set(items)].join(' y ');
+	const windy = windKmph > 15;
+
+	const vibe = {
+		hot: [
+			'🔥 hace calorcito', '☀️ hoy se sale de remera', '😎 destapate un poco',
+			'🌴 buscá una sombra', '🏃 andá livianito', '🥵 está pesado el día',
+			'🌞 un sol que derrite', '🥤 métete una buena hidratación', '🔥 parece un horno',
+			'😅 estamos al horno', '🌡️ temperatura tropical', '🥵 uff qué calorón',
+			'☀️ día de playa si tuvieras', '🔥 la calle quema', '🌴 buscate una sombrita',
+			'🥵 no hay quien aguante', '😎 día de lentes y manga corta',
+		],
+		mild: [
+			'🌤️ fresco lindo', '👕 está para un buzito', '🌬️ mejor una capa más',
+			'🧥 fresco pero lindo', '🌤️ temperatura ideal', '🌸 día agradable',
+			'🍃 se respira lindo', '🌥️ ni frío ni calor', '👌 está justo',
+			'🌤️ lindo día pa\' salir', '🧥 no confiarse del todo',
+			'🍂 está templadito', '☁️ clima agradable', '🌬️ corre un fresco lindo',
+		],
+		cool: [
+			'💪 no seas valiente', '🌬️ está fresco de verdad', '⚠️ no subestimes el fresco',
+			'🌥️ medio fresquito', '🧥 está frescachiento', '🍂 el fresco ya se siente',
+			'🌬️ corrientes de aire fresco', '🧥 mejor prevenir que curar',
+			'☁️ día de campera', '🍁 fresco de otoño', '🌡️ temperaturas bajando',
+			'🧥 no es pa\' confiarse', '🌬️ se viene el frío', '🥶 arranca el fresco',
+		],
+		cold: [
+			'🧊 no está pa\' hacerse el guapo', '🥶 hoy hace un frío bárbaro',
+			'🧊 abrigate chango', '🥶 preparate pa\' tiritar', '🧊 está salado el clima',
+			'🥶 hace un frío de morirse', '🧊 heladito el día', '🥶 salí como cebolla',
+			'🧊 el frío cala los huesos', '🥶 no está pa\' nadie',
+			'🧊 día de quedarse en cama', '🥶 tiritando de parado',
+			'🧊 abrigate bien', '🥶 hoy el frío no perdona',
+		],
+		vcold: [
+			'🥶 hoy el frío pega fuerte', '🧅 parecés cebolla con tantas capas',
+			'🧊 metele capas sin asco', '🥶 no te regalés', '🧊 está bravo el día',
+			'🧊 esto es frío posta', '🥶 no hay abrigo que alcance',
+			'🧊 temperaturas bajo cero', '🥶 salí bien arropado',
+			'🧊 día de sacar los plumíferos', '🥶 la calle está congelada',
+			'🧊 parece que estamos en la heladera',
+		],
+		freezing: [
+			'❄️ salí envuelto en una frazada', '🧊 vestite como pa\' ir a la Antártida',
+			'🥶 hoy hasta el mate tiembla', '❄️ congelate con estilo',
+			'🔥 hacete amigo de la estufa', '❄️ temperatura polar',
+			'🧊 se congelan hasta las ideas', '🥶 no salgas si no es necesario',
+			'❄️ día de película y mantita', '🧊 el frío corta el aliento',
+			'🥶 parece Siberia', '❄️ abrigate hasta los dientes',
+			'🧊 esto no es frío, es criogenia',
+		],
+	};
+
+	const cloth = {
+		hot: [['remera', '👕'], ['manga corta', '👕'], ['ojotas', '🩴'], ['zapatillas', '👟'], ['pantalón corto', '🩳'], ['camisita', '👕']],
+		mild: [['buzo', '🧥'], ['bucito', '🧥'], ['manga larga', '👕'], ['camperita liviana', '🧥'], ['chaleco', '🧥'], ['canguro', '🧥']],
+		cool: [['campera', '🧥'], ['buzo', '🧥'], ['buzo grueso', '🧥'], ['camperita', '🧥'], ['sweater', '🧶'], ['polerón', '🧥'], ['chaleco', '🧥']],
+		cold: [['campera gruesa', '🧥'], ['buzo', '🧥'], ['doble pantalón', '👖'], ['gorrito', '🧣'], ['bufanda', '🧣'], ['sweater', '🧶'], ['polerón', '🧥'], ['guantes', '🧤']],
+		vcold: [['doble pantalón', '👖'], ['pijama abajo', '🛌'], ['buzo térmico', '🧥'], ['campera acolchada', '🧥'], ['bufanda', '🧣'], ['gorro y guantes', '🧤'], ['polera térmica', '🧥'], ['medias gruesas', '🧦']],
+		freezing: [['pijama abajo de la ropa', '🛌'], ['doble pantalón', '👖'], ['buzo térmico', '🧥'], ['campera acolchada', '🧥'], ['bufanda', '🧣'], ['gorro y guantes', '🧤'], ['tres capas', '🧅'], ['medias térmicas', '🧦'], ['cuello polar', '🧣']],
+	};
+
+	const connectors = ['ponete', 'metele', 'mandale', 'no olvides', 'tirale'];
+	const rainItems = [
+		['paraguas', '☂️'], ['piloto', '🧥'], ['impermeable', '🧥'],
+	];
+
+	let pool, clothPool, minCloth, maxCloth;
+	if (temp >= 25) { pool = vibe.hot; clothPool = cloth.hot; minCloth = 1; maxCloth = 1; }
+	else if (temp >= 18) { pool = vibe.mild; clothPool = cloth.mild; minCloth = 1; maxCloth = 2; }
+	else if (temp >= 10) { pool = vibe.cool; clothPool = cloth.cool; minCloth = 2; maxCloth = 3; }
+	else if (temp >= 5) { pool = vibe.cold; clothPool = cloth.cold; minCloth = 3; maxCloth = 4; }
+	else if (temp >= 0) { pool = vibe.vcold; clothPool = cloth.vcold; minCloth = 3; maxCloth = 5; }
+	else { pool = vibe.freezing; clothPool = cloth.freezing; minCloth = 4; maxCloth = 6; }
+
+	const parts = [rand(pool)];
+
+	const clothes = shuffle([...clothPool]).slice(0, Math.floor(Math.random() * (maxCloth - minCloth + 1)) + minCloth);
+	if (clothes.length > 0) {
+		const verb = rand(connectors);
+		const items = clothes.map(([name, emoji]) => `${emoji} ${name}`);
+		if (clothes.length === 1) parts.push(`${verb} ${items[0]}`);
+		else parts.push(`${verb} ${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`);
+	}
+
+	if (rain) {
+		const [name, emoji] = rand(rainItems);
+		if (Math.random() > 0.5) parts.push(`y no te olvides ${emoji} ${name}`);
+		else parts.push(`ojo que llueve, llevá ${emoji} ${name}`);
+	}
+	if (windy) parts.push(rand([
+		'ojo con el viento', 'el viento corta la cara',
+		'cerrá bien la campera', 'agarrate el gorro',
+		'cuidado que vuela todo',
+	]));
+
+	return parts.join(', ');
 }
 
 function fetchWeather() {
-	fetch('https://wttr.in/?format=j1')
-		.then(r => r.json())
-		.then(data => {
-			const cc = data.current_condition[0];
-			const area = data.nearest_area[0];
-			const city = area.areaName[0].value;
-			const country = area.country[0].value;
-			weatherLoc.textContent = `${city}, ${country}`;
-
-			const temp = cc.temp_C;
-			const desc = cc.weatherDesc[0].value;
-			const hum = cc.humidity;
-			const wind = cc.windspeedKmph;
-			const feel = cc.FeelsLikeC;
-			const code = cc.weatherCode;
-			const emoji = getWeatherEmoji(code);
-
-			weatherBody.innerHTML = `
-				<div class="weather-icon">${emoji}</div>
-				<div>
-					<div class="weather-temp">${temp}°C</div>
-					<div class="weather-desc">${desc}</div>
-					<div class="weather-rec">${weatherRec(temp, code)}</div>
-				</div>
-				<div class="weather-details">
-					<span>🌡️ Sensación ${feel}°C</span>
-					<span>💧 ${hum}% humedad</span>
-					<span>💨 ${wind} km/h</span>
-				</div>
-			`;
-		})
+	fetch('/api/weather')
+		.then(r => r.ok ? r.json() : Promise.reject())
+		.then(renderWeather)
 		.catch(() => {
-			weatherBody.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+			// Fallback directo a wttr.in
+			fetch('https://wttr.in/?format=j1')
+				.then(r => r.json())
+				.then(renderWeather)
+				.catch(() => {
+					weatherBody.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+				});
 		});
+}
+
+function renderWeather(data) {
+	const cc = data.current_condition[0];
+	const area = data.nearest_area[0];
+	if (!cc || !area) {
+		weatherBody.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+		return;
+	}
+	const city = area.areaName[0].value;
+	const country = area.country[0].value;
+	weatherLoc.textContent = `${city}, ${country}`;
+
+	const temp = Number(cc.temp_C);
+	const desc = cc.weatherDesc[0].value;
+	const hum = cc.humidity;
+	const wind = Number(cc.windspeedKmph);
+	const feel = cc.FeelsLikeC;
+	const code = cc.weatherCode;
+	const emoji = getWeatherEmoji(code);
+
+	weatherBody.innerHTML = `
+		<div class="weather-icon">${emoji}</div>
+		<div>
+			<div class="weather-temp">${temp}°C</div>
+			<div class="weather-desc">${desc}</div>
+		</div>
+		<div class="weather-details">
+			<span>🌡️ Sensación ${feel}°C</span>
+			<span>💧 ${hum}% humedad</span>
+			<span>💨 ${wind} km/h</span>
+		</div>
+		<div class="weather-rec">${weatherRec(temp, code, wind)}</div>
+	`;
 }
 
 function getWeatherEmoji(code) {

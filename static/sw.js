@@ -1,4 +1,4 @@
-const CACHE = 'panel-admin-v2';
+const CACHE = 'panel-admin-v9';
 const ASSETS = [
 	'/',
 	'/style.css',
