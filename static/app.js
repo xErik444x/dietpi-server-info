@@ -434,66 +434,123 @@ function weatherRec(temp, code, windKmph) {
 
 	const vibe = {
 		hot: [
-			'🔥 hace calorcito', '☀️ hoy se sale de remera', '😎 destapate un poco',
-			'🌴 buscá una sombra', '🏃 andá livianito', '🥵 está pesado el día',
-			'🌞 un sol que derrite', '🥤 métete una buena hidratación', '🔥 parece un horno',
-			'😅 estamos al horno', '🌡️ temperatura tropical', '🥵 uff qué calorón',
-			'☀️ día de playa si tuvieras', '🔥 la calle quema', '🌴 buscate una sombrita',
-			'🥵 no hay quien aguante', '😎 día de lentes y manga corta',
+			'El sol de Daggerfall cae implacable, lleva solo lo necesario',
+			'Caminas por las llanuras ardientes de Tanaris, viaja ligero',
+			'Las arenas de Desolacione te abrasan, no cargues peso',
+			'Los desiertos de Kalimdor te esperan, viste ligero de armadura',
+			'El sol de RuneScape cae sobre ti, destápate',
+			'El aliento de dragón del Pantano del Dragón te abraza',
+			'Las forjas de Khaz Modan son más frescas que afuera',
+			'Los Dothraki cabalgarían ligeros con este sol',
+			'El sol de Dorne cae sobre ti, no hay quien aguante',
+			'Las arenas del Olvidado Reich te chamuscan',
+			'Caminas sobre el asfalto ardiente de Ventormenta',
+			'El clima de Stranglethorn es húmedo y caliente, viste ligero',
 		],
 		mild: [
-			'🌤️ fresco lindo', '👕 está para un buzito', '🌬️ mejor una capa más',
-			'🧥 fresco pero lindo', '🌤️ temperatura ideal', '🌸 día agradable',
-			'🍃 se respira lindo', '🌥️ ni frío ni calor', '👌 está justo',
-			'🌤️ lindo día pa\' salir', '🧥 no confiarse del todo',
-			'🍂 está templadito', '☁️ clima agradable', '🌬️ corre un fresco lindo',
+			'El bosque de Elwynn te recibe, una capa ligera bastará',
+			'Caminas por las verdes praderas de Azeroth, viste a tu gusto',
+			'Los climas de la Comarca son amables, viaja cómodo',
+			'Los reinos gozan de paz climática, viste ligero',
+			'El clima de Lothlórien es templado, una túnica basta',
+			'Los Valles de Tirisfal tienen brisa, viste a tu gusto',
+			'Las verdes colinas de la Comarca invitan a caminar',
+			'El río Anduin fluye tranquilo, clima apacible',
+			'Los campos de Stormwind son templados, viste ligero',
+			'Las calles de Bree son frescas, no hace falta mucho',
+			'Los Reinos del Este gozan de buen clima, viste a tu gusto',
+			'Caminas por las laderas de Dunland, clima benigno',
 		],
 		cool: [
-			'💪 no seas valiente', '🌬️ está fresco de verdad', '⚠️ no subestimes el fresco',
-			'🌥️ medio fresquito', '🧥 está frescachiento', '🍂 el fresco ya se siente',
-			'🌬️ corrientes de aire fresco', '🧥 mejor prevenir que curar',
-			'☁️ día de campera', '🍁 fresco de otoño', '🌡️ temperaturas bajando',
-			'🧥 no es pa\' confiarse', '🌬️ se viene el frío', '🥶 arranca el fresco',
+			'El viento de Dun Morogh empieza a soplar, lleva capa',
+			'Las montañas de Khaz Modan refrescan, abrígate',
+			'El otoño llega a Rivendell, lleva capa de viajero',
+			'El paso de montaña te espera, no subestimes el clima',
+			'Los bosques de Felwood se enfrían, viste grueso',
+			'Las colinas de Skyrim son frescas, lleva buen abrigo',
+			'El clima de Norgaz se vuelve traicionero, abrígate',
+			'Las nieves perpetuas de Cima Tormenta se acercan',
+			'El paso de las Tres Cimas se vuelve frío, viste preparado',
+			'Los Túneles de Terrallende tienen clima fresco, viste grueso',
+			'El bosque de Mirkwood se enfría, lleva capa pesada',
+			'Las calles de Hogsmeade se tornan frescas, abrígate',
 		],
 		cold: [
-			'🧊 no está pa\' hacerse el guapo', '🥶 hoy hace un frío bárbaro',
-			'🧊 abrigate chango', '🥶 preparate pa\' tiritar', '🧊 está salado el clima',
-			'🥶 hace un frío de morirse', '🧊 heladito el día', '🥶 salí como cebolla',
-			'🧊 el frío cala los huesos', '🥶 no está pa\' nadie',
-			'🧊 día de quedarse en cama', '🥶 tiritando de parado',
-			'🧊 abrigate bien', '🥶 hoy el frío no perdona',
+			'El frío de Skyrim te llama, viste grueso',
+			'Las nieves de Dun Morogh te abrazan, lleva todo lo que tengas',
+			'El invierno se acerca a Winterfell, viste como un Stark',
+			'Las montañas de Kun-Lai son traicioneras, abrígate bien',
+			'El frío de Forochel te congela el alma, viste grueso',
+			'Los páramos de Rasganorte te hielan, viste capas',
+			'Las tundras de Northrend te esperan, abrígate',
+			'Los Túneles de Dun Morogh te enfrían los huesos',
+			'Las cumbres de Gundabad son heladas, viste grueso',
+			'El aliento de Arthas se congela, abrígate bien',
+			'Los pasos de montaña de Khaz Modan son helados',
+			'Las nieves de la Corona Invernal te esperan',
 		],
 		vcold: [
-			'🥶 hoy el frío pega fuerte', '🧅 parecés cebolla con tantas capas',
-			'🧊 metele capas sin asco', '🥶 no te regalés', '🧊 está bravo el día',
-			'🧊 esto es frío posta', '🥶 no hay abrigo que alcance',
-			'🧊 temperaturas bajo cero', '🥶 salí bien arropado',
-			'🧊 día de sacar los plumíferos', '🥶 la calle está congelada',
-			'🧊 parece que estamos en la heladera',
+			'Las nieves de Rasganorte te abrazan, vístete como para la guerra',
+			'El frío de Nordrassil te cala los huesos, lleva todo encima',
+			'El paso del Caradhras te rechazará si no llevas todo',
+			'Las Montañas de Krokul te piden ropaje grueso',
+			'Los páramos de Rasganorte te convertirán en estatua',
+			'Las tundras de Corona Invernal te hielan hasta el alma',
+			'El frío de las Estepas de los Centauros es mortal',
+			'Las nieves perpetuas de Cima Tormenta te observan',
+			'Los pasos de Gundabad son letales sin buen abrigo',
+			'Las heladas de Rasganorte no perdonan al caminante',
+			'Las tundras del Norte te piden ropaje de dragón',
 		],
 		freezing: [
-			'❄️ salí envuelto en una frazada', '🧊 vestite como pa\' ir a la Antártida',
-			'🥶 hoy hasta el mate tiembla', '❄️ congelate con estilo',
-			'🔥 hacete amigo de la estufa', '❄️ temperatura polar',
-			'🧊 se congelan hasta las ideas', '🥶 no salgas si no es necesario',
-			'❄️ día de película y mantita', '🧊 el frío corta el aliento',
-			'🥶 parece Siberia', '❄️ abrigate hasta los dientes',
-			'🧊 esto no es frío, es criogenia',
+			'El clima de Rasganorte no perdona, solo los más aptos sobreviven',
+			'Las nieves de Corona Invernal te cubrirán, lleva todo lo que tengas',
+			'El aliento de Sartha se congela, vístete como un dragón',
+			'El frío de Rasganorte te convertirá en estatua, no salgas',
+			'Las nieves de Arthas te llaman, solo los locos o valientes se atreven',
+			'Los páramos del Norte te convertirán en leyenda o en hielo',
+			'El aliento de los Vrykul se congela antes de salir, abrígate o muere',
+			'Las nieves eternas de Northrend te harán leyenda o ceniza',
+			'Los páramos de Corona Invernal son la morada de Arthas, no seas valiente',
+			'El frío del Vacío Abisal te espera al salir, viste como para sobrevivir',
+			'Los páramos de Rasganorte han matado a más héroes que la guerra',
+			'Las nieves del Trono Helado te convertirán en estatua',
 		],
 	};
 
 	const cloth = {
-		hot: [['remera', '👕'], ['manga corta', '👕'], ['ojotas', '🩴'], ['zapatillas', '👟'], ['pantalón corto', '🩳'], ['camisita', '👕']],
-		mild: [['buzo', '🧥'], ['bucito', '🧥'], ['manga larga', '👕'], ['camperita liviana', '🧥'], ['chaleco', '🧥'], ['canguro', '🧥']],
-		cool: [['campera', '🧥'], ['buzo', '🧥'], ['buzo grueso', '🧥'], ['camperita', '🧥'], ['sweater', '🧶'], ['polerón', '🧥'], ['chaleco', '🧥']],
-		cold: [['campera gruesa', '🧥'], ['buzo', '🧥'], ['doble pantalón', '👖'], ['gorrito', '🧣'], ['bufanda', '🧣'], ['sweater', '🧶'], ['polerón', '🧥'], ['guantes', '🧤']],
-		vcold: [['doble pantalón', '👖'], ['pijama abajo', '🛌'], ['buzo térmico', '🧥'], ['campera acolchada', '🧥'], ['bufanda', '🧣'], ['gorro y guantes', '🧤'], ['polera térmica', '🧥'], ['medias gruesas', '🧦']],
-		freezing: [['pijama abajo de la ropa', '🛌'], ['doble pantalón', '👖'], ['buzo térmico', '🧥'], ['campera acolchada', '🧥'], ['bufanda', '🧣'], ['gorro y guantes', '🧤'], ['tres capas', '🧅'], ['medias térmicas', '🧦'], ['cuello polar', '🧣']],
+		hot: [
+			['túnica ligera', null], ['manto de lino', null], ['túnica de viaje', null],
+			['vestido de verano', null], ['túnica de mago', null], ['pantalón corto', null],
+		],
+		mild: [
+			['túnica de viaje', null], ['capa de viajero', null], ['manto ligero', null],
+			['chaleco de cuero', null], ['capa élfica', null], ['túnica con capucha', null],
+		],
+		cool: [
+			['capa pesada', null], ['túnica gruesa', null], ['chaleco acolchado', null],
+			['manto de piel', null], ['capa de viajero', null], ['armadura de cuero', null],
+		],
+		cold: [
+			['manto de lobo', null], ['armadura de cuero gruesa', null], ['capa pesada', null],
+			['guanteletes', null], ['yelmo de cuero', null], ['túnica forrada', null],
+			['capa con capucha', null], ['botas de montar', null],
+		],
+		vcold: [
+			['armadura de placas', null], ['manto de oso polar', null], ['yelmo de hierro', null],
+			['capa de dragón', null], ['guanteletes de acero', null], ['túnica forrada en piel', null],
+			['doble par de pantalones', null], ['botas forradas', null],
+		],
+		freezing: [
+			['armadura de dragón', null], ['yelmo de escarcha', null], ['capa de Sartha', null],
+			['túnica de Northrend', null], ['guanteletes de adamantita', null], ['tres capas de piel', null],
+			['doble par de pantalones', null], ['botas de escarcha', null], ['yelmo de Arthas', null],
+		],
 	};
 
-	const connectors = ['ponete', 'metele', 'mandale', 'no olvides', 'tirale'];
+	const connectors = ['lleva', 'porta', 'viste', 'carga', 'no olvides'];
 	const rainItems = [
-		['paraguas', '☂️'], ['piloto', '🧥'], ['impermeable', '🧥'],
+		'capa impermeable', 'paraguas de la Comarca', 'manto repelente',
 	];
 
 	let pool, clothPool, minCloth, maxCloth;
@@ -509,20 +566,20 @@ function weatherRec(temp, code, windKmph) {
 	const clothes = shuffle([...clothPool]).slice(0, Math.floor(Math.random() * (maxCloth - minCloth + 1)) + minCloth);
 	if (clothes.length > 0) {
 		const verb = rand(connectors);
-		const items = clothes.map(([name, emoji]) => `${emoji} ${name}`);
+		const items = clothes.map(([name]) => name);
 		if (clothes.length === 1) parts.push(`${verb} ${items[0]}`);
 		else parts.push(`${verb} ${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`);
 	}
 
 	if (rain) {
-		const [name, emoji] = rand(rainItems);
-		if (Math.random() > 0.5) parts.push(`y no te olvides ${emoji} ${name}`);
-		else parts.push(`ojo que llueve, llevá ${emoji} ${name}`);
+		const item = rand(rainItems);
+		parts.push(`el clima de Shattrath es húmedo, lleva ${item}`);
 	}
 	if (windy) parts.push(rand([
-		'ojo con el viento', 'el viento corta la cara',
-		'cerrá bien la campera', 'agarrate el gorro',
-		'cuidado que vuela todo',
+		'el viento de la Tormenta Abisal sopla sobre ti',
+		'los Djinn del aire cabalgan a tu lado',
+		'cierra bien tu capa, el dragón del viento ruge',
+		'cuidado con las corrientes de Alterac',
 	]));
 
 	return parts.join(', ');
