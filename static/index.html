@@ -11,6 +11,640 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,500;0,700;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <title>Panel Admin</title>
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	html, body {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	body {
+		background-color: #0a0e27;
+		font-family: 'JetBrains Mono', monospace;
+		position: relative;
+	}
+
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background-image: url('https://i.ibb.co/GQ0BFc0J/be09b83df47c2610364fc09c0c27cf1f-upscayl-2x-realistic-Rescaler.png');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		z-index: 0;
+		opacity: 1;
+	}
+
+	#app {
+		position: relative;
+		z-index: 2;
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		opacity: 0.7;
+	}
+
+	#topbar {
+		flex-shrink: 0;
+		padding: 20px 30px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(5px);
+	}
+
+	#dashboard {
+		flex: 1;
+		overflow-y: auto;
+		padding: 20px;
+		scroll-behavior: smooth;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 16px;
+		align-content: start;
+	}
+
+	section[data-metric="procs"] {
+		grid-column: 1 / -1;
+	}
+
+	section[data-metric="services"] {
+		grid-column: 1 / -1;
+	}
+
+	section[data-metric="weather"] {
+		grid-column: 1 / -1;
+	}
+
+	.weather-body {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 40px;
+		padding: 10px 0;
+	}
+
+	.weather-icon {
+		font-size: 56px;
+		line-height: 1;
+	}
+
+	.weather-temp {
+		font-size: 48px;
+		font-weight: 700;
+		color: #64b5ff;
+	}
+
+	.weather-desc {
+		font-size: 18px;
+		color: rgba(255, 255, 255, 0.7);
+		margin-top: 4px;
+	}
+
+	.weather-rec {
+		font-size: 16px;
+		font-weight: 700;
+		color: #f0c040;
+		margin-top: 8px;
+	}
+
+	.weather-details {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	.weather-details span {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.weather-loading {
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.4);
+		padding: 20px;
+	}
+
+	#dashboard::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	#dashboard::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	#dashboard::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 4px;
+	}
+
+	#dashboard::-webkit-scrollbar-thumb:hover {
+		background: rgba(255, 255, 255, 0.4);
+	}
+
+	#footer {
+		flex-shrink: 0;
+		padding: 15px 30px;
+		text-align: center;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.5);
+		backdrop-filter: blur(5px);
+	}
+
+	/* ─── Landscape / Horizontal ─────────────────────────────────────── */
+	@media (orientation: landscape) {
+		body::before {
+			background-image: url('https://i.imgur.com/N9n1X9L.jpeg');
+		}
+
+		#topbar {
+			padding: 10px 20px;
+		}
+
+		#dashboard {
+			padding: 10px;
+			gap: 10px;
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		section[data-metric="procs"] {
+			grid-column: span 2;
+			height: 320px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		section[data-metric="services"] {
+			grid-column: span 2;
+			height: 320px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		section[data-metric="weather"] {
+			grid-column: span 2;
+			height: 320px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		section[data-metric="network"] {
+			height: 320px;
+		}
+
+		section[data-metric="load"] {
+			height: 320px;
+		}
+
+		.card {
+			padding: 10px;
+			margin-bottom: 0;
+		}
+
+		.card-header {
+			margin-bottom: 6px;
+		}
+
+		.card-value {
+			font-size: 22px;
+			margin: 4px 0;
+		}
+
+		.card-chart {
+			margin: 4px 0;
+			padding: 4px;
+		}
+
+		.card-cores {
+			grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+			gap: 3px;
+			margin-top: 4px;
+		}
+
+		.core {
+			font-size: 9px;
+			padding: 2px;
+		}
+
+		.card-icon {
+			font-size: 16px;
+		}
+
+		.card-title {
+			font-size: 12px;
+		}
+
+		.card-badge {
+			font-size: 10px;
+			padding: 2px 6px;
+		}
+
+		.card-sub {
+			font-size: 10px;
+			margin-top: 2px;
+		}
+
+		.card-bar {
+			height: 5px;
+			margin: 4px 0;
+		}
+
+		.net-row {
+			gap: 8px;
+			margin-bottom: 4px;
+		}
+
+		.net-value {
+			font-size: 13px;
+		}
+
+		.net-label {
+			font-size: 10px;
+		}
+
+		.load-item {
+			padding: 6px 4px;
+		}
+
+		.load-num {
+			font-size: 14px;
+		}
+
+		.load-label {
+			font-size: 9px;
+		}
+
+		.load-row {
+			gap: 6px;
+		}
+
+		.procs-list {
+			max-height: 25vh;
+		}
+
+		.procs-item {
+			padding: 4px 0;
+			font-size: 10px;
+		}
+
+		.services-list {
+			max-height: 25vh;
+		}
+
+		.disk-item {
+			margin-bottom: 6px;
+		}
+
+		.disk-label {
+			font-size: 11px;
+			margin-bottom: 4px;
+		}
+
+		.disk-pct {
+			font-size: 10px;
+		}
+
+		.weather-body {
+			gap: 20px;
+			padding: 4px 0;
+		}
+
+		.weather-body {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 30px;
+		}
+
+		.weather-icon {
+			font-size: 56px;
+		}
+
+		.weather-temp {
+			font-size: 42px;
+		}
+
+		.weather-desc {
+			font-size: 18px;
+		}
+
+		.weather-rec {
+			font-size: 18px;
+			font-weight: 700;
+			color: #f0c040;
+			margin-top: 6px;
+		}
+
+		.weather-details {
+			font-size: 16px;
+			gap: 6px;
+		}
+
+		#footer {
+			padding: 8px 20px;
+			font-size: 10px;
+		}
+
+		.topbar-left, .topbar-right {
+			font-size: 11px;
+			gap: 8px;
+		}
+
+		.status-dot {
+			width: 6px;
+			height: 6px;
+		}
+	}
+
+	/* Tarjetas */
+	.card {
+		background: rgba(20, 24, 50, 0.8);
+		border: 1px solid rgba(100, 150, 255, 0.2);
+		border-radius: 12px;
+		padding: 20px;
+		margin-bottom: 16px;
+		backdrop-filter: blur(10px);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		transition: border-color 0.3s ease, box-shadow 0.3s ease;
+	}
+
+	.card:hover {
+		border-color: rgba(100, 150, 255, 0.4);
+		box-shadow: 0 8px 48px rgba(100, 150, 255, 0.1);
+	}
+
+	.card-header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 12px;
+		gap: 12px;
+	}
+
+	.card-icon {
+		font-size: 24px;
+	}
+
+	.card-title {
+		font-size: 16px;
+		font-weight: 500;
+		color: #ffffff;
+		flex: 1;
+	}
+
+	.card-badge {
+		font-size: 12px;
+		color: #64b5ff;
+		background: rgba(100, 150, 255, 0.15);
+		padding: 4px 10px;
+		border-radius: 6px;
+		font-weight: 300;
+	}
+
+	.card-value {
+		font-size: 32px;
+		font-weight: 700;
+		color: #64b5ff;
+		margin: 12px 0;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.card-chart {
+		margin: 12px 0;
+		background: rgba(10, 14, 39, 0.4);
+		border-radius: 8px;
+		padding: 8px;
+	}
+
+	.card-chart canvas {
+		display: block;
+		width: 100% !important;
+		height: auto !important;
+	}
+
+	.card-bar {
+		height: 8px;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 4px;
+		overflow: hidden;
+		margin: 8px 0;
+	}
+
+	.bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #64b5ff, #00ffff);
+		transition: width 0.3s ease;
+		border-radius: 4px;
+	}
+
+	.card-sub {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.6);
+		margin-top: 8px;
+	}
+
+	.card-cores {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+		gap: 6px;
+		margin-top: 12px;
+	}
+
+	.core {
+		background: rgba(100, 150, 255, 0.1);
+		border: 1px solid rgba(100, 150, 255, 0.3);
+		border-radius: 4px;
+		padding: 4px;
+		text-align: center;
+		font-size: 11px;
+		color: #64b5ff;
+		font-weight: 300;
+	}
+
+	/* Disk */
+	.disk-item {
+		margin-bottom: 12px;
+	}
+
+	.disk-label {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		font-size: 13px;
+	}
+
+	.disk-mount {
+		color: #ffffff;
+		font-weight: 500;
+	}
+
+	.disk-size {
+		color: rgba(255, 255, 255, 0.6);
+		font-size: 11px;
+	}
+
+	.disk-pct {
+		font-size: 12px;
+		color: #64b5ff;
+		text-align: right;
+		margin-top: 4px;
+	}
+
+	/* Network */
+	.net-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+		margin-bottom: 12px;
+	}
+
+	.net-stat {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.net-label {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.6);
+		margin-bottom: 4px;
+	}
+
+	.net-value {
+		font-size: 16px;
+		color: #64b5ff;
+		font-weight: 500;
+	}
+
+	/* Load Average */
+	.load-row {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+	}
+
+	.load-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		background: rgba(100, 150, 255, 0.1);
+		border: 1px solid rgba(100, 150, 255, 0.2);
+		border-radius: 8px;
+		padding: 12px 8px;
+	}
+
+	.load-num {
+		font-size: 18px;
+		color: #64b5ff;
+		font-weight: 600;
+	}
+
+	.load-label {
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.6);
+		margin-top: 4px;
+	}
+
+	/* Procesos */
+	.procs-list {
+		max-height: 300px;
+		overflow-y: auto;
+	}
+
+	.procs-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 8px 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		font-size: 12px;
+	}
+
+	.procs-item:last-child {
+		border-bottom: none;
+	}
+
+	.procs-name {
+		color: #ffffff;
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 60%;
+	}
+
+	.procs-cpu {
+		color: #64b5ff;
+		margin: 0 8px;
+		min-width: 40px;
+		text-align: right;
+	}
+
+	.procs-mem {
+		color: #00ffcc;
+		min-width: 40px;
+		text-align: right;
+	}
+
+	.procs-placeholder {
+		color: rgba(255, 255, 255, 0.3);
+		text-align: center;
+		padding: 20px;
+		font-size: 12px;
+	}
+
+	/* Topbar */
+	.topbar-left, .topbar-right {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.status-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #00ff00;
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
+	}
+
+	/* Scrollbar general */
+	::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 3px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: rgba(255, 255, 255, 0.4);
+	}
+</style>
 </head>
 <body>
 <div id="app">
@@ -20,7 +654,7 @@
 			<span id="hostname">—</span>
 		</div>
 		<div class="topbar-right">
-			<span id="uptimeDisplay"></span>
+			<span id="uptimeDisplay">0m</span>
 			<span id="timeDisplay"></span>
 		</div>
 	</header>
@@ -31,7 +665,7 @@
 			<div class="card-header">
 				<span class="card-icon">⚡</span>
 				<h2 class="card-title">CPU</h2>
-				<span class="card-badge" id="cpuFreq"></span>
+				<span class="card-badge" id="cpuFreq">—</span>
 			</div>
 			<div class="card-value" id="cpuValue">0%</div>
 			<div class="card-chart">
@@ -45,7 +679,7 @@
 			<div class="card-header">
 				<span class="card-icon">🧠</span>
 				<h2 class="card-title">Memory</h2>
-				<span class="card-badge" id="memDetail"></span>
+				<span class="card-badge" id="memDetail">0.0 / 0.0 GB</span>
 			</div>
 			<div class="card-value" id="memValue">0%</div>
 			<div class="card-bar">
@@ -128,10 +762,32 @@
 			<div class="card-header">
 				<span class="card-icon">🔧</span>
 				<h2 class="card-title">Top Processes</h2>
-				<span class="card-badge" id="procCount"></span>
+				<span class="card-badge" id="procCount">0</span>
 			</div>
 			<div class="procs-list" id="procsList">
 				<div class="procs-placeholder">No data yet</div>
+			</div>
+		</section>
+		<!-- Services -->
+		<section class="card" id="servicesCard" data-metric="services">
+			<div class="card-header">
+				<span class="card-icon">🔌</span>
+				<h2 class="card-title">Listening Services</h2>
+				<span class="card-badge" id="svcCount">0</span>
+			</div>
+			<div class="services-list" id="servicesList">
+				<div class="services-placeholder">Loading...</div>
+			</div>
+		</section>
+		<!-- Weather -->
+		<section class="card" id="weatherCard" data-metric="weather">
+			<div class="card-header">
+				<span class="card-icon">🌤️</span>
+				<h2 class="card-title" id="weatherDate">—</h2>
+				<span class="card-badge" id="weatherLoc">—</span>
+			</div>
+			<div class="weather-body" id="weatherBody">
+				<div class="weather-loading">Loading weather...</div>
 			</div>
 		</section>
 	</main>

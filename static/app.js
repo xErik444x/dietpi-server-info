@@ -1,5 +1,5 @@
 /* ─── App State ───────────────────────────────────────────────────────── */
-const MAX_POINTS = 120; // 4 minutes at 2s intervals
+const MAX_POINTS = 120; // 10 minutes at 5s intervals
 
 const state = {
 	cpu: [],
@@ -39,13 +39,23 @@ const procsList     = $('procsList');
 const procCount     = $('procCount');
 
 /* ─── Canvas Setup ────────────────────────────────────────────────────── */
-function setupCanvas(id) {
+function chartHeights() {
+	const landscape = window.innerWidth > window.innerHeight;
+	if (landscape) {
+		return { cpu: 50, mem: 35, temp: 35, net: 35 };
+	}
+	const w = window.innerWidth;
+	if (w < 520) return { cpu: 60, mem: 40, temp: 40, net: 40 };
+	if (w < 768) return { cpu: 80, mem: 50, temp: 50, net: 50 };
+	return { cpu: 120, mem: 80, temp: 80, net: 80 };
+}
+
+function setupCanvas(id, h) {
 	const canvas = document.getElementById(id);
 	if (!canvas) return null;
 	const rect = canvas.parentElement.getBoundingClientRect();
 	const dpr = window.devicePixelRatio || 1;
 	const w = Math.max(rect.width, 100);
-	const h = canvas.height;
 	canvas.width = w * dpr;
 	canvas.height = h * dpr;
 	canvas.style.width = w + 'px';
@@ -58,30 +68,34 @@ function setupCanvas(id) {
 const charts = {};
 function initCharts() {
 	const defs = {
-		cpuChart:  { id: 'cpuChart',  h: 120 },
-		memChart:  { id: 'memChart',  h: 80 },
-		tempChart: { id: 'tempChart', h: 80 },
-		netChart:  { id: 'netChart', h: 80 },
+		cpuChart:  'cpuChart',
+		memChart:  'memChart',
+		tempChart: 'tempChart',
+		netChart:  'netChart',
 	};
-	for (const [key, def] of Object.entries(defs)) {
-		const canvas = document.getElementById(def.id);
-		if (!canvas) continue;
-		canvas.height = def.h;
-		const setup = setupCanvas(def.id);
+	const heights = chartHeights();
+	for (const [key, id] of Object.entries(defs)) {
+		const setup = setupCanvas(id, heights[key.replace('Chart','')]);
 		if (setup) charts[key] = setup;
 	}
 }
 
 function resizeCharts() {
+	const heights = chartHeights();
 	for (const [key, ch] of Object.entries(charts)) {
-		const canvas = document.getElementById(key === 'cpuChart' ? 'cpuChart' : key === 'memChart' ? 'memChart' : key === 'tempChart' ? 'tempChart' : 'netChart');
+		const id = key;
+		const canvas = document.getElementById(id);
 		if (!canvas) continue;
 		const rect = canvas.parentElement.getBoundingClientRect();
 		const dpr = window.devicePixelRatio || 1;
 		const w = Math.max(rect.width, 100);
+		const h = heights[key.replace('Chart','')];
 		canvas.width = w * dpr;
+		canvas.height = h * dpr;
 		canvas.style.width = w + 'px';
+		canvas.style.height = h + 'px';
 		ch.w = w;
+		ch.h = h;
 		ch.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 	}
 }
@@ -174,8 +188,9 @@ function updateClock() {
 
 /* ─── Update Functions ─────────────────────────────────────────────────── */
 function updateCPU(m) {
-	cpuValue.textContent = m.cpu + '%';
-	cpuValue.className = 'card-value' + (m.cpu > 80 ? ' danger' : m.cpu > 60 ? ' warning' : '');
+	const cpu = m.cpu ?? 0;
+	cpuValue.textContent = cpu + '%';
+	cpuValue.className = 'card-value' + (cpu > 80 ? ' danger' : cpu > 60 ? ' warning' : '');
 	cpuFreq.textContent = m.cpu_freq ? m.cpu_freq.toFixed(0) + ' MHz' : '';
 
 	// Per-core bars
@@ -188,47 +203,44 @@ function updateCPU(m) {
 			i++;
 		}
 	}
+
 	cpuCores.innerHTML = html;
 
 	// History & chart
-	state.cpu.push(m.cpu);
+	state.cpu.push(cpu);
 	if (state.cpu.length > MAX_POINTS) state.cpu.shift();
 	const ch = charts.cpuChart;
 	if (ch) drawSparkline(ch.ctx, state.cpu, ch.w, ch.h, '#58A6FF', { strokeWidth: 2 });
 }
 
 function updateMemory(m) {
-	const mem = m.memory;
-	memValue.textContent = mem.used_pct + '%';
-	memValue.className = 'card-value' + (mem.used_pct > 85 ? ' danger' : mem.used_pct > 70 ? ' warning' : '');
-	memBar.style.width = Math.min(mem.used_pct, 100) + '%';
-	memBar.className = 'bar-fill' + (mem.used_pct > 85 ? ' danger' : mem.used_pct > 70 ? ' warning' : '');
-	memDetail.textContent = mem.used_gb.toFixed(1) + ' / ' + mem.total_gb.toFixed(1) + ' GB';
+	const mem = m.memory || {};
+	const up = mem.used_pct ?? 0;
+	memValue.textContent = up + '%';
+	memValue.className = 'card-value' + (up > 85 ? ' danger' : up > 70 ? ' warning' : '');
+	memBar.style.width = Math.min(up, 100) + '%';
+	memBar.className = 'bar-fill' + (up > 85 ? ' danger' : up > 70 ? ' warning' : '');
+	memDetail.textContent = (mem.used_gb ?? 0).toFixed(1) + ' / ' + (mem.total_gb ?? 0).toFixed(1) + ' GB';
 
-	if (mem.swap_total_gb > 0) {
-		memSub.textContent = `Swap: ${mem.swap_used_gb.toFixed(1)} / ${mem.swap_total_gb.toFixed(1)} GB (${mem.swap_used_pct}%)`;
+	if ((mem.swap_total_gb ?? 0) > 0) {
+		memSub.textContent = `Swap: ${(mem.swap_used_gb ?? 0).toFixed(1)} / ${(mem.swap_total_gb ?? 0).toFixed(1)} GB (${mem.swap_used_pct ?? 0}%)`;
 	} else {
 		memSub.textContent = 'Swap: none';
 	}
 
-	state.mem.push(mem.used_pct);
+	state.mem.push(up);
 	if (state.mem.length > MAX_POINTS) state.mem.shift();
 	const ch = charts.memChart;
 	if (ch) drawSparkline(ch.ctx, state.mem, ch.w, ch.h, '#2AD4A8', { strokeWidth: 2 });
 }
 
 function updateDisk(m) {
-	if (!m.disk || m.disk.length === 0) {
-		diskSize.textContent = '—';
-		diskBar.style.width = '0%';
-		diskPct.textContent = '0%';
-		return;
-	}
-	const d = m.disk[0];
-	diskSize.textContent = d.used_gb.toFixed(1) + ' / ' + d.total_gb.toFixed(1) + ' GB';
-	diskBar.style.width = Math.min(d.used_pct, 100) + '%';
-	diskBar.className = 'bar-fill' + (d.used_pct > 90 ? ' danger' : d.used_pct > 75 ? ' warning' : '');
-	diskPct.textContent = d.used_pct + '%';
+	const d = (m.disk && m.disk.length > 0) ? m.disk[0] : null;
+	const usedPct = d ? (d.used_pct ?? 0) : 0;
+	diskSize.textContent = d ? (d.used_gb ?? 0).toFixed(1) + ' / ' + (d.total_gb ?? 0).toFixed(1) + ' GB' : '—';
+	diskBar.style.width = Math.min(usedPct, 100) + '%';
+	diskBar.className = 'bar-fill' + (usedPct > 90 ? ' danger' : usedPct > 75 ? ' warning' : '');
+	diskPct.textContent = usedPct + '%';
 }
 
 function updateTemperature(m) {
@@ -278,14 +290,15 @@ function updateNetwork(m) {
 }
 
 function updateLoad(m) {
-	load1.textContent = m.load_1m.toFixed(2);
-	load5.textContent = m.load_5m.toFixed(2);
-	load15.textContent = m.load_15m.toFixed(2);
+	load1.textContent = (m.load_1m ?? 0).toFixed(2);
+	load5.textContent = (m.load_5m ?? 0).toFixed(2);
+	load15.textContent = (m.load_15m ?? 0).toFixed(2);
 }
 
 function updateProcesses(m) {
 	if (!m.processes || m.processes.length === 0) {
-		procsList.innerHTML = '<div class="procs-placeholder">No data yet</div>';
+		const html = '<div class="procs-placeholder">No data yet</div>';
+		if (procsList.innerHTML !== html) procsList.innerHTML = html;
 		procCount.textContent = '0';
 		return;
 	}
@@ -300,7 +313,50 @@ function updateProcesses(m) {
 			<span class="proc-mem">${p.mem}%</span>
 		</div>`;
 	}
-	procsList.innerHTML = html;
+	if (procsList.innerHTML !== html) procsList.innerHTML = html;
+}
+
+/* ─── Services (HTTP/PM2 polling) ────────────────────────────────────────── */
+const svcList = document.getElementById('servicesList');
+const svcCount = document.getElementById('svcCount');
+
+function fetchServices() {
+	fetch('/api/services')
+		.then(r => r.json())
+		.then(data => {
+			if (!data.services || data.services.length === 0) {
+				const html = '<div class="services-placeholder">No listening services found</div>';
+				if (svcList.innerHTML !== html) svcList.innerHTML = html;
+				svcCount.textContent = '0';
+				return;
+			}
+			const excludeNames = ['proftpd', 'dropbear', 'xrdp', 'nginx'];
+			const filtered = data.services.filter(s => s.source !== 'pm2' && !excludeNames.includes(s.name));
+			const pm2Count = data.services.length - filtered.length;
+			const pm2Badge = pm2Count > 0 ? ` <span class="pm2-badge">+${pm2Count} pm2</span>` : '';
+			svcCount.innerHTML = filtered.length + pm2Badge;
+			let html = '';
+			for (const s of filtered) {
+				let portTag = '';
+				if (s.port > 0) {
+					portTag = `<span class="svc-tag ${s.type}">${s.port}</span>`;
+				}
+				const srcBadge = s.source === 'pm2' ? '<span class="svc-src pm2">pm2</span>' : '';
+				const protoTag = s.protocol ? `<span class="svc-proto">${s.protocol}</span>` : '';
+				html += `<div class="svc-row">
+					<span class="svc-pid">${s.pid}</span>
+					<span class="svc-name">${escHtml(s.name)}</span>
+					${portTag}
+					${protoTag}
+					${srcBadge}
+				</div>`;
+			}
+			if (svcList.innerHTML !== html) svcList.innerHTML = html;
+		})
+		.catch(() => {
+			const html = '<div class="services-placeholder">Error fetching services</div>';
+			if (svcList.innerHTML !== html) svcList.innerHTML = html;
+		});
 }
 
 function escHtml(s) {
@@ -349,6 +405,80 @@ function applyMetrics(m) {
 	updateProcesses(m);
 }
 
+/* ─── Weather ──────────────────────────────────────────────────────────── */
+const weatherDate = document.getElementById('weatherDate');
+const weatherLoc = document.getElementById('weatherLoc');
+const weatherBody = document.getElementById('weatherBody');
+
+function updateDate() {
+	const now = new Date();
+	const dateStr = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+	const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+	weatherDate.textContent = `${dateStr} · ${timeStr}`;
+}
+
+function weatherRec(temp, code) {
+	const c = Number(code);
+	const rain = (c >= 176 && c <= 200) || (c >= 263 && c <= 389);
+	const items = [];
+	if (rain) items.push('☂️ paraguas');
+	if (temp >= 25) items.push('👕 remera');
+	else if (temp >= 18) items.push('👕 ponete buzo');
+	else if (temp >= 10) items.push('🧥 ponete campera');
+	else items.push('🧊 abrigate chango');
+	return '🛍️ ' + [...new Set(items)].join(' y ');
+}
+
+function fetchWeather() {
+	fetch('https://wttr.in/?format=j1')
+		.then(r => r.json())
+		.then(data => {
+			const cc = data.current_condition[0];
+			const area = data.nearest_area[0];
+			const city = area.areaName[0].value;
+			const country = area.country[0].value;
+			weatherLoc.textContent = `${city}, ${country}`;
+
+			const temp = cc.temp_C;
+			const desc = cc.weatherDesc[0].value;
+			const hum = cc.humidity;
+			const wind = cc.windspeedKmph;
+			const feel = cc.FeelsLikeC;
+			const code = cc.weatherCode;
+			const emoji = getWeatherEmoji(code);
+
+			weatherBody.innerHTML = `
+				<div class="weather-icon">${emoji}</div>
+				<div>
+					<div class="weather-temp">${temp}°C</div>
+					<div class="weather-desc">${desc}</div>
+					<div class="weather-rec">${weatherRec(temp, code)}</div>
+				</div>
+				<div class="weather-details">
+					<span>🌡️ Sensación ${feel}°C</span>
+					<span>💧 ${hum}% humedad</span>
+					<span>💨 ${wind} km/h</span>
+				</div>
+			`;
+		})
+		.catch(() => {
+			weatherBody.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+		});
+}
+
+function getWeatherEmoji(code) {
+	const c = Number(code);
+	if (c >= 113) return '☀️';
+	if (c >= 116 && c <= 119) return '⛅';
+	if (c >= 122 && c <= 143) return '☁️';
+	if (c >= 176 && c <= 200) return '🌧️';
+	if (c >= 227 && c <= 230) return '❄️';
+	if (c >= 248 && c <= 260) return '🌫️';
+	if (c >= 263 && c <= 389) return '🌦️';
+	if (c >= 392 && c <= 395) return '🌨️';
+	return '🌡️';
+}
+
 /* ─── Init ─────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
 	// Register service worker
@@ -358,8 +488,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	initCharts();
 	updateClock();
-	setInterval(updateClock, 10000);
+	updateDate();
+	setInterval(() => { updateClock(); updateDate(); }, 10000);
 	connectSSE();
+	fetchServices();
+	setInterval(fetchServices, 15000);
+	updateDate();
+	fetchWeather();
+	setInterval(fetchWeather, 600000); // every 10 min
 
 	let resizeTimer;
 	window.addEventListener('resize', () => {
