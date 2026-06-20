@@ -519,38 +519,17 @@ function weatherRec(temp, code, windKmph) {
 	};
 
 	const cloth = {
-		hot: [
-			['túnica ligera', null], ['manto de lino', null], ['túnica de viaje', null],
-			['vestido de verano', null], ['túnica de mago', null], ['pantalón corto', null],
-		],
-		mild: [
-			['túnica de viaje', null], ['capa de viajero', null], ['manto ligero', null],
-			['chaleco de cuero', null], ['capa élfica', null], ['túnica con capucha', null],
-		],
-		cool: [
-			['capa pesada', null], ['túnica gruesa', null], ['chaleco acolchado', null],
-			['manto de piel', null], ['capa de viajero', null], ['armadura de cuero', null],
-		],
-		cold: [
-			['manto de lobo', null], ['armadura de cuero gruesa', null], ['capa pesada', null],
-			['guanteletes', null], ['yelmo de cuero', null], ['túnica forrada', null],
-			['capa con capucha', null], ['botas de montar', null],
-		],
-		vcold: [
-			['armadura de placas', null], ['manto de oso polar', null], ['yelmo de hierro', null],
-			['capa de dragón', null], ['guanteletes de acero', null], ['túnica forrada en piel', null],
-			['doble par de pantalones', null], ['botas forradas', null],
-		],
-		freezing: [
-			['armadura de dragón', null], ['yelmo de escarcha', null], ['capa de Sartha', null],
-			['túnica de Northrend', null], ['guanteletes de adamantita', null], ['tres capas de piel', null],
-			['doble par de pantalones', null], ['botas de escarcha', null], ['yelmo de Arthas', null],
-		],
+		hot: [['remera', null], ['manga corta', null], ['ojotas', null], ['zapatillas', null], ['pantalón corto', null], ['camisita', null]],
+		mild: [['buzo', null], ['bucito', null], ['manga larga', null], ['camperita liviana', null], ['chaleco', null], ['canguro', null]],
+		cool: [['campera', null], ['buzo', null], ['buzo grueso', null], ['camperita', null], ['sweater', null], ['polerón', null], ['chaleco', null]],
+		cold: [['campera gruesa', null], ['buzo', null], ['doble pantalón', null], ['gorrito', null], ['bufanda', null], ['sweater', null], ['polerón', null], ['guantes', null]],
+		vcold: [['doble pantalón', null], ['pijama abajo', null], ['buzo térmico', null], ['campera acolchada', null], ['bufanda', null], ['gorro y guantes', null], ['polera térmica', null], ['medias gruesas', null]],
+		freezing: [['pijama abajo de la ropa', null], ['doble pantalón', null], ['buzo térmico', null], ['campera acolchada', null], ['bufanda', null], ['gorro y guantes', null], ['tres capas', null], ['medias térmicas', null], ['cuello polar', null]],
 	};
 
-	const connectors = ['lleva', 'porta', 'viste', 'carga', 'no olvides'];
+	const connectors = ['ponete', 'metele', 'mandale', 'no olvides', 'tirale'];
 	const rainItems = [
-		'capa impermeable', 'paraguas de la Comarca', 'manto repelente',
+		'paraguas', 'piloto', 'impermeable',
 	];
 
 	let pool, clothPool, minCloth, maxCloth;
@@ -573,13 +552,13 @@ function weatherRec(temp, code, windKmph) {
 
 	if (rain) {
 		const item = rand(rainItems);
-		parts.push(`el clima de Shattrath es húmedo, lleva ${item}`);
+		if (Math.random() > 0.5) parts.push(`y no te olvides ${item}`);
+		else parts.push(`ojo que llueve, llevá ${item}`);
 	}
 	if (windy) parts.push(rand([
-		'el viento de la Tormenta Abisal sopla sobre ti',
-		'los Djinn del aire cabalgan a tu lado',
-		'cierra bien tu capa, el dragón del viento ruge',
-		'cuidado con las corrientes de Alterac',
+		'ojo con el viento', 'el viento corta la cara',
+		'cerrá bien la campera', 'agarrate el gorro',
+		'cuidado que vuela todo',
 	]));
 
 	return parts.join(', ');
