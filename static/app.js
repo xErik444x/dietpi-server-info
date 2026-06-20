@@ -521,8 +521,8 @@ function weatherRec(temp, code, windKmph) {
 	const cloth = {
 		hot: [['remera', null], ['manga corta', null], ['ojotas', null], ['zapatillas', null], ['pantalón corto', null], ['camisita', null]],
 		mild: [['buzo', null], ['bucito', null], ['manga larga', null], ['camperita liviana', null], ['chaleco', null], ['canguro', null]],
-		cool: [['campera', null], ['buzo', null], ['buzo grueso', null], ['camperita', null], ['sweater', null], ['polerón', null], ['chaleco', null]],
-		cold: [['campera gruesa', null], ['buzo', null], ['doble pantalón', null], ['gorrito', null], ['bufanda', null], ['sweater', null], ['polerón', null], ['guantes', null]],
+		cool: [['campera', null], ['buzo', null], ['buzo grueso', null], ['camperita', null], ['buzo fino', null], ['polerón', null], ['chaleco', null]],
+		cold: [['campera gruesa', null], ['buzo', null], ['doble pantalón', null], ['gorrito', null], ['bufanda', null], ['buzo fino', null], ['polerón', null], ['guantes', null]],
 		vcold: [['doble pantalón', null], ['pijama abajo', null], ['buzo térmico', null], ['campera acolchada', null], ['bufanda', null], ['gorro y guantes', null], ['polera térmica', null], ['medias gruesas', null]],
 		freezing: [['pijama abajo de la ropa', null], ['doble pantalón', null], ['buzo térmico', null], ['campera acolchada', null], ['bufanda', null], ['gorro y guantes', null], ['tres capas', null], ['medias térmicas', null], ['cuello polar', null]],
 	};
